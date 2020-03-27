@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="row">
+  <div class="col-lg-2 col-md-4">
+  	<a class="btn btn-outline-secondary col-12" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Teams
+  </a>
+  <div class="border border-dark rounded collapse" id="collapseExample">
+		<table class="table table-wrapper-scroll-y my-custom-scrollbar">
+
+		  	{% for team in teams %}
+		    <tr>
+		      <th><a href="{% url 'team-dataset' dataset.id team.id %}">{{team}}</a></th>
+		    </tr>
+		    {% endfor %}
+
+		</table>
+		
+	</div>
+  </div>
+	
+	<div class="col-lg-10 col-md-8">
+		<div class="text-center">
+			<h1>{{dataset}}</h1>
+			<h class="text-muted">{{team}} - points:{{team_points}}</h4>
+		</div>
+
+		<form method="POST" action="{% url 'update' team.id dataset.id %}">
+			{% csrf_token %}
+			<div style="overflow-x:auto; overflow-y: hidden;" class="col-12">
+			<table class="table table-striped" >
+				{% for question in dataset.questions.all %}{% for locked in locked_questions %}{% if forloop.counter == forloop.parentloop.counter %}
+						<tr class="{% if locked %}text-muted{% endif %}">
+							<th>{{question.id}}</th>
+							<td>{{question.question}}</td>
+							{% if question in team.questions.all %}
+								<td>					
+									<a class="btn btn-outline-danger" href="{% url 'undo' question.id team.id %}">undo</a>
+								</td>
+							{% elif locked %}
+								<td>
+									<i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="{% for question in question.prerequisites.all %} Q:{{question.id}} {% endfor %}"></i>
+								</td>
+							{% else %}
+
+								<td>
+									<input class="form-check-input" type="checkbox" name="question" value="{{question.id}}">
+								  <label class="form-check-label" for="defaultCheck1">
+								    done
+								  </label>
+								  
+								</td>
+							{% endif %}
+						</tr>	
+{% endif %}{% endfor %}{% endfor %}
+			</table>
+		</div>
+			<button type="submit" class="float-right btn btn-outline-dark col-sm-10 col-lg-3 m-3 mx-auto">Update</button>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})</script>
+{% endblock content %}
