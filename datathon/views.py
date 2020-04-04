@@ -4,7 +4,15 @@ from .models import Dataset, Team, Question
 
 
 def teams(request):
-	teams = Team.objects.all().order_by('-points')
+	teams = Team.objects.all()
+	if request.user.is_authenticated:
+		teams = teams.order_by('-points')
+	else:
+		if teams.first().saved_points:
+			teams = teams.order_by('-saved_points')
+		else:
+			teams.teams.order_by('-points')
+			
 	datasets = Dataset.objects.all()
 	points_per_dataset = []
 	for team in teams:
@@ -48,6 +56,10 @@ def undo(request, team_id, question_id):
 	team = Team.objects.get(id=team_id)
 	question = Question.objects.get(id=question_id)
 	team.questions.remove(question)
+	questions = Question.objects.filter(level__level__gt=question.level.level)
+	team.questions.remove(*questions)
+	team.points = team.get_points()
+	team.save()
 	return redirect('team-dataset', question.dataset.id, team_id)
 
 
@@ -58,11 +70,23 @@ def update(request, team_id, dataset_id):
 		done = request.POST.getlist('question')
 		for question in done:
 			team.questions.add(question)
+		team.points = team.get_points()
+		team.save()
 		return redirect('team-dataset', dataset_id, team_id)
 
 
 def deactivate_dashboard(request):
 	for team in Team.objects.all():
-		team.points = team.get_points()
+		team.saved_points = team.points
 		team.save()
 	return redirect("teams")
+
+
+def activate_dashboard(request):
+	for team in Team.objects.all():
+		team.saved_points = 0
+		team.save()
+	return redirect("teams")
+
+
+

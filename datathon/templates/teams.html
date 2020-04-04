@@ -25,13 +25,17 @@
 	      {% for points in team_points %}
 	      	<td>{{points}}</td>
 	      {% endfor %}
-	      <td>{{team.get_points}}</td>
+	      <td>{{team.points}}</td>
 	    </tr>
 	    {% endif %}
 	    {% endfor %}{% endfor %}
 	  </tbody>
-	</table>
-	<a class="btn btn-outline-success col-lg-4 col-xs-11 float-right" href="{% url 'deactivate-dashboard' %}">Deactivate</a>
+	</table>{{teams.0.saved_points}}
+	{% if teams.0.saved_points %}
+		<a class="btn btn-outline-success col-lg-4 col-xs-11 float-right" href="{% url 'activate-dashboard' %}">Activate</a>
+	{% else %}
+		<a class="btn btn-outline-success col-lg-4 col-xs-11 float-right" href="{% url 'deactivate-dashboard' %}">Deactivate</a>
+	{% endif %}
 </div>
 {% else %}
 <div class="table-responsive mx-auto col-11 leaderboard">
@@ -55,7 +59,7 @@
 	      {% for points in team_points %}
 	      	<td class="text-black border-dark">{{points}}</td>
 	      {% endfor %}
-	      <td class="border-dark">{{team.get_points}}</td>
+	      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.points}}{% endif %}</td>
 	    </tr>
 	    {% endif %}
 	    {% endfor %}{% endfor %}

@@ -32,6 +32,7 @@ class Team(models.Model):
 	points = models.IntegerField(default=0)
 	questions = models.ManyToManyField(Question, blank=True)
 	bonus_points = models.IntegerField(default=0)
+	saved_points = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name
@@ -39,4 +40,3 @@ class Team(models.Model):
 	def get_points(self):
 		questions = self.questions.all()
 		return sum([question.level.points for question in questions])
-
