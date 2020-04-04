@@ -19,7 +19,6 @@ class Question(models.Model):
 	level = models.ForeignKey(Level, on_delete=models.CASCADE)
 	question = models.TextField()
 	dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="questions")
-	prerequisites = models.ManyToManyField("Question", related_name="questions", blank=True)
 
 	class Meta:
 		ordering = ["level__level"]
@@ -32,6 +31,7 @@ class Team(models.Model):
 	name = models.CharField(max_length=100)
 	points = models.IntegerField(default=0)
 	questions = models.ManyToManyField(Question, blank=True)
+	bonus_points = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.name

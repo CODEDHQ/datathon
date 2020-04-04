@@ -23,19 +23,21 @@ def teams(request):
 def team_dataset(request, dataset_id, team_id):
 	dataset = Dataset.objects.get(id=dataset_id)
 	team = Team.objects.get(id=team_id)
+	level = 1
 
-	locked = []
-	for question in dataset.questions.all():
-		if all(question in team.questions.all() for question in question.prerequisites.all()):
-			locked.append(False)
-		else:
-			locked.append(True)
+	levels = dataset.questions.order_by("-level__level").values_list('level__level', flat=True).distinct()
+	for level in levels:
+		finished_q = team.questions.filter(dataset=dataset, level__level=level).count()
+		left_q = dataset.questions.filter(level__level=level).count()
+		if finished_q == left_q:
+			level = level+1
+			break
 
 	context = {
 		"teams" : Team.objects.all(),
 		"team" : team,
 		"dataset" :  dataset,
-		"locked_questions" : locked,
+		"level" : level,
 		"team_points": sum(team.questions.filter(dataset_id=dataset_id).values_list('level__points', flat=True))
 	}
 	return render(request, 'team_project.html', context)
@@ -59,3 +61,8 @@ def update(request, team_id, dataset_id):
 		return redirect('team-dataset', dataset_id, team_id)
 
 
+def deactivate_dashboard(request):
+	for team in Team.objects.all():
+		team.points = team.get_points()
+		team.save()
+	return redirect("teams")

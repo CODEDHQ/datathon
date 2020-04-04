@@ -31,15 +31,15 @@
 			{% csrf_token %}
 			<div style="overflow-x:auto; overflow-y: hidden;" class="col-12">
 			<table class="table table-striped" >
-				{% for question in dataset.questions.all %}{% for locked in locked_questions %}{% if forloop.counter == forloop.parentloop.counter %}
+				{% for question in dataset.questions.all %}
 						<tr class="{% if locked %}text-muted{% endif %}">
-							<th>{{question.id}}</th>
+							<th>{{question.level.level}}</th>
 							<td>{{question.question}}</td>
 							{% if question in team.questions.all %}
 								<td>					
 									<a class="btn btn-outline-danger" href="{% url 'undo' question.id team.id %}">undo</a>
 								</td>
-							{% elif locked %}
+							{% elif level <  question.level.level %}
 								<td>
 									<i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="{% for question in question.prerequisites.all %} Q:{{question.id}} {% endfor %}"></i>
 								</td>
@@ -54,7 +54,7 @@
 								</td>
 							{% endif %}
 						</tr>	
-{% endif %}{% endfor %}{% endfor %}
+                {% endfor %}
 			</table>
 		</div>
 			<button type="submit" class="float-right btn btn-outline-dark col-sm-10 col-lg-3 m-3 mx-auto">Update</button>
