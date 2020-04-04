@@ -1,0 +1,43 @@
+<div class="table-responsive mx-auto col-11 leaderboard">
+	<table class="table table-bordered border border-dark bg-grey table-hover ">
+	  <thead>
+	    <tr>
+	      <th scope="col" class="border-dark"></th>
+	      <th scope="col" class="border-dark"></th>
+	      {% for dataset in datasets %}
+	      <th scope="col" class="border-dark text-light">{{dataset}}</th>
+	      {% endfor %}
+	      <th scope="col" class="border-dark"></th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for team in teams %}
+
+		  	{% if team.dataset_points.all.0.points %}
+				<tr class="text-light">
+			      <th scope="row" class="border-dark">{{forloop.counter}}</th>
+			      <td class="border-dark">{{team.name}}</td>
+			      {% for points in team.dataset_points.all %}
+			      	<td class="text-black border-dark">{{points.points}}</td>
+			      {% endfor %}
+			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.points}}{% endif %}</td>
+			    </tr>
+		  	{% else %}
+			  	{% for team_points in points_per_dataset %}
+			  	{% if forloop.counter == forloop.parentloop.counter %}
+			    <tr class="text-light">
+			      <th scope="row" class="border-dark">{{forloop.counter}}</th>
+			      <td class="border-dark">{{team.name}}</td>
+			      {% for points in team_points %}
+			      	<td class="text-black border-dark">{{points}}</td>
+			      {% endfor %}
+			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.points}}{% endif %}</td>
+			    </tr>
+			    {% endif %}
+			    {% endfor %}
+			{% endif %}
+
+	    {% endfor %}
+	  </tbody>
+	</table>
+</div>

@@ -40,3 +40,20 @@ class Team(models.Model):
 	def get_points(self):
 		questions = self.questions.all()
 		return sum([question.level.points for question in questions])
+
+	def get_dataset_points(self, dataset_id):
+		return sum(self.questions.all().filter(dataset_id=dataset_id).values_list('level__points', flat=True))
+
+
+class TeamDataset(models.Model):
+	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="dataset_points")
+	dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+	points = models.IntegerField(default=0)
+
+	class Meta:
+		ordering = ["dataset"]
+
+
+
+
+

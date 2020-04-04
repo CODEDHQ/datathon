@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Dataset, Team, Question
+from .models import Dataset, Team, Question, TeamDataset
 
 
 def teams(request):
@@ -11,12 +11,12 @@ def teams(request):
 		if teams.first().saved_points:
 			teams = teams.order_by('-saved_points')
 		else:
-			teams.teams.order_by('-points')
-			
+			teams.order_by('-points')
+
 	datasets = Dataset.objects.all()
 	points_per_dataset = []
 	for team in teams:
-		team_points = [sum(team.questions.all().filter(dataset=dataset).values_list('level__points', flat=True)) for dataset in datasets]
+		team_points = [team.get_dataset_points(dataset.id) for dataset in datasets]
 		points_per_dataset.append(team_points)
 	context = {
 		"teams": teams,
@@ -79,6 +79,11 @@ def deactivate_dashboard(request):
 	for team in Team.objects.all():
 		team.saved_points = team.points
 		team.save()
+		for dataset in Dataset.objects.all():
+			dataset_points, created = TeamDataset.objects.get_or_create(team=team, dataset=dataset)
+			dataset_points.points = team.get_dataset_points(dataset.id)
+			dataset_points.save()
+			
 	return redirect("teams")
 
 
@@ -86,6 +91,11 @@ def activate_dashboard(request):
 	for team in Team.objects.all():
 		team.saved_points = 0
 		team.save()
+		for dataset in Dataset.objects.all():
+			dataset_points, created = TeamDataset.objects.get_or_create(team=team, dataset=dataset)
+			dataset_points.points = 0
+			dataset_points.save()
+			
 	return redirect("teams")
 
 
