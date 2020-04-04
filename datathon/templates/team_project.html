@@ -32,9 +32,8 @@
 			<div style="overflow-x:auto; overflow-y: hidden;" class="col-12">
 			<table class="table table-striped" >
 				{% for question in dataset.questions.all %}
-						<tr class="{% if locked %}text-muted{% endif %}">
-							<th>{{question.level.level}}</th>
-							<td>{{question.question}}</td>
+						<tr style="background-color: {{question.level.color}}">
+							<td >{{question.question}}</td>
 							{% if question in team.questions.all %}
 								<td>					
 									<a class="btn btn-outline-danger" href="{% url 'undo' question.id team.id %}">undo</a>
@@ -44,13 +43,11 @@
 									<i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="{% for question in question.prerequisites.all %} Q:{{question.id}} {% endfor %}"></i>
 								</td>
 							{% else %}
-
 								<td>
 									<input class="form-check-input" type="checkbox" name="question" value="{{question.id}}">
 								  <label class="form-check-label" for="defaultCheck1">
 								    done
-								  </label>
-								  
+								  </label>  
 								</td>
 							{% endif %}
 						</tr>	
