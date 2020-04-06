@@ -26,7 +26,6 @@
 			<h1>{{dataset}}</h1>
 			<h class="text-muted">{{team}} - points:{{team_points}}</h4>
 		</div>
-
 		<form method="POST" action="{% url 'update' team.id dataset.id %}">
 			{% csrf_token %}
 			<div style="overflow-x:auto; overflow-y: hidden;" class="col-12">
@@ -54,11 +53,13 @@
                 {% endfor %}
 			</table>
 		</div>
-			<button type="submit" class="float-right btn btn-outline-dark col-sm-10 col-lg-3 m-3 mx-auto">Update</button>
+			<button type="submit" class="float-right btn btn-outline-dark col-sm-10 col-lg-3 mt-3">Update</button>
+			{% if done %}
+			<a class="btn btn-outline-success col-sm-10 col-lg-3 mt-3" data-toggle="modal" data-target="#exampleModal">Bonus</a>
+			{% endif %}
 		</form>
 	</div>
 </div>
-<script type="text/javascript">$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})</script>
+
+{% include 'bonus_modal.html' with dataset=dataset team=team %}
 {% endblock content %}

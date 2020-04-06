@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Dataset, Team, Question, TeamDataset
+from .models import Dataset, Team, Question, TeamDataset, BonusScore
 
 
 def teams(request):
@@ -46,7 +46,8 @@ def team_dataset(request, dataset_id, team_id):
 		"team" : team,
 		"dataset" :  dataset,
 		"level" : level,
-		"team_points": sum(team.questions.filter(dataset_id=dataset_id).values_list('level__points', flat=True))
+		"team_points": team.get_dataset_points(dataset_id),
+		"done": team.is_dataset_done(dataset_id)
 	}
 	return render(request, 'team_project.html', context)
 
@@ -75,6 +76,7 @@ def update(request, team_id, dataset_id):
 		return redirect('team-dataset', dataset_id, team_id)
 
 
+@login_required
 def deactivate_dashboard(request):
 	for team in Team.objects.all():
 		team.saved_points = team.points
@@ -87,6 +89,7 @@ def deactivate_dashboard(request):
 	return redirect("teams")
 
 
+@login_required
 def activate_dashboard(request):
 	for team in Team.objects.all():
 		team.saved_points = 0
@@ -97,6 +100,18 @@ def activate_dashboard(request):
 			dataset_points.save()
 			
 	return redirect("teams")
+
+
+@login_required
+def add_bonus_score(request, dataset_id, team_id):
+	team = Team.objects.get(id=team_id)
+	if request.method=="POST" and team.is_dataset_done(dataset_id):
+		score = sum([float(score)for score in request.POST.getlist('score')])/3
+		print(score)
+		bonus_score, created = BonusScore.objects.get_or_create(team_id=team_id, dataset_id=dataset_id, user=request.user)
+		bonus_score.score = score
+		bonus_score.save()
+	return redirect('team-dataset', dataset_id, team_id)
 
 
 

@@ -24,3 +24,4 @@ class DatasetAdmin(admin.ModelAdmin):
 admin.site.register(Team)
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Level)
+admin.site.register(BonusScore)

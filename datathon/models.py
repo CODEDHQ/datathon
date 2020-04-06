@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Avg
+from django.contrib.auth.models import User
 
 class Dataset(models.Model):
 	name = models.CharField(max_length=50)
@@ -30,7 +32,7 @@ class Question(models.Model):
 
 class Team(models.Model):
 	name = models.CharField(max_length=100)
-	points = models.IntegerField(default=0)
+	points = models.DecimalField(decimal_places=1, max_digits=10 ,default=0)
 	questions = models.ManyToManyField(Question, blank=True)
 	bonus_points = models.IntegerField(default=0)
 	saved_points = models.IntegerField(default=0)
@@ -39,22 +41,38 @@ class Team(models.Model):
 		return self.name
 
 	def get_points(self):
-		questions = self.questions.all()
-		return sum([question.level.points for question in questions])
+		datasets = Dataset.objects.all()
+		return sum([self.get_dataset_points(dataset.id) for dataset in datasets])
 
 	def get_dataset_points(self, dataset_id):
-		return sum(self.questions.all().filter(dataset_id=dataset_id).values_list('level__points', flat=True))
+		bonus_scores = self.bonus_scores.filter(dataset_id=dataset_id)
+		points = sum(self.questions.all().filter(dataset_id=dataset_id).values_list('level__points', flat=True))
+		if bonus_scores.exists():
+			return points*0.6 + (float((self.bonus_scores.filter(dataset_id=dataset_id).aggregate(score=Avg('score'))['score']/5))*points*0.4)
+		else:
+			return points*0.6
+
+	def is_dataset_done(self, dataset_id):
+		solved_questions = self.questions.filter(dataset_id=dataset_id).count()
+		dataset_questions = Question.objects.filter(dataset_id=dataset_id).count()
+		return solved_questions==dataset_questions
 
 
 class TeamDataset(models.Model):
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="dataset_points")
 	dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
-	points = models.IntegerField(default=0)
+	points = models.DecimalField(decimal_places=1, max_digits=10 ,default=0)
 
 	class Meta:
 		ordering = ["dataset"]
 
 
+class BonusScore(models.Model):
+	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="bonus_scores")
+	dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="bonus_scores")
+	score = models.DecimalField(decimal_places=1, max_digits=4 ,default=0)
+	user = models.ForeignKey(User, on_delete=models.PROTECT)
 
-
+	class Meta:
+		unique_together = ['team', 'dataset', 'user']
 
