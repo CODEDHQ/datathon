@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Dataset, Team, Question, TeamDataset, BonusScore, Level
 from django.http import JsonResponse
 import requests
-from django.views.decorators.csrf import csrf_exempt
+
 def teams(request):
 	teams = Team.objects.all()
 	if request.user.is_authenticated:
@@ -115,11 +115,9 @@ def add_bonus_score(request, dataset_id, team_id):
 	return redirect('team-dataset', dataset_id, team_id)
 
 
-@csrf_exempt
 def add_datasets(request):
 	if request.method == 'POST':
 		board_id = request.POST['board_id']
-		pattern = '\((\d+)\)'
 		levels = {}
 		for level in Level.objects.all():
 			levels[f'L{level.level}'] = level 
