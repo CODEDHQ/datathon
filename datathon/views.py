@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Dataset, Team, Question, TeamDataset, BonusScore
-
-
+from .models import Dataset, Team, Question, TeamDataset, BonusScore, Level
+from django.http import JsonResponse
+import requests
+from django.views.decorators.csrf import csrf_exempt
 def teams(request):
 	teams = Team.objects.all()
 	if request.user.is_authenticated:
@@ -79,7 +80,7 @@ def update(request, team_id, dataset_id):
 @login_required
 def deactivate_dashboard(request):
 	for team in Team.objects.all():
-		team.saved_points = team.points
+		team.saved_points = team.get_points()
 		team.save()
 		for dataset in Dataset.objects.all():
 			dataset_points, created = TeamDataset.objects.get_or_create(team=team, dataset=dataset)
@@ -114,4 +115,25 @@ def add_bonus_score(request, dataset_id, team_id):
 	return redirect('team-dataset', dataset_id, team_id)
 
 
+@csrf_exempt
+def add_datasets(request):
+	if request.method == 'POST':
+		board_id = request.POST['board_id']
+		pattern = '\((\d+)\)'
+		levels = {}
+		for level in Level.objects.all():
+			levels[f'L{level.level}'] = level 
 
+		print(levels)
+
+		url = "https://api.trello.com/1/boards/{board_id}/lists".format(board_id=board_id)
+		querystring = {"fields":"name","cards":"all","card_fields":"name,labels", "key": "dd79278e4430052c1ed1ba5e53f086f0", "token": "db7e18f8ddb1ad6fad80d767c543c236e5c01080a6a28c37e606299f75a9ecac"}
+		response = requests.request("GET", url, params=querystring)
+		for dataset in response.json():
+			dataset_obj = Dataset.objects.create(name=dataset["name"])
+			for card in dataset["cards"]:
+				if card["labels"]:
+					Question.objects.create(level=levels[card["labels"][0]["name"]], dataset=dataset_obj, question=card["name"])
+		return redirect("teams")
+	return render(request, "create_project.html")
+	

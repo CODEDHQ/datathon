@@ -31,7 +31,7 @@
 			      {% for points in team_points %}
 			      	<td class="text-black border-dark">{{points}}</td>
 			      {% endfor %}
-			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.points}}{% endif %}</td>
+			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.get_points}}{% endif %}</td>
 			    </tr>
 			    {% endif %}
 			    {% endfor %}

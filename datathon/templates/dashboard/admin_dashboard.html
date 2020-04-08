@@ -21,7 +21,7 @@
 	      {% for points in team_points %}
 	      	<td>{{points}}</td>
 	      {% endfor %}
-	      <td>{{team.points}}</td>
+	      <td>{{team.get_points}}</td>
 	    </tr>
 	    {% endif %}
 	    {% endfor %}{% endfor %}
