@@ -18,22 +18,22 @@
 			      <th scope="row" class="border-dark">{{forloop.counter}}</th>
 			      <td class="border-dark">{{team.name}}</td>
 			      {% for points in team.dataset_points.all %}
-			      	<td class="text-black border-dark">{{points.points}}</td>
+			      	<td class="text-black border-dark">{{points.points|floatformat:'1'}}</td>
 			      {% endfor %}
-			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.points}}{% endif %}</td>
+			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points|floatformat:'2'}}{% else %}{{team.points|floatformat:'1'}}{% endif %}</td>
 			    </tr>
 		  	{% else %}
 			  	{% for team_points in points_per_dataset %}
-			  	{% if forloop.counter == forloop.parentloop.counter %}
-			    <tr class="text-light">
-			      <th scope="row" class="border-dark">{{forloop.counter}}</th>
-			      <td class="border-dark">{{team.name}}</td>
-			      {% for points in team_points %}
-			      	<td class="text-black border-dark">{{points}}</td>
-			      {% endfor %}
-			      <td class="border-dark">{% if team.saved_points %}{{team.saved_points}}{% else %}{{team.get_points}}{% endif %}</td>
-			    </tr>
-			    {% endif %}
+				  	{% if forloop.counter == forloop.parentloop.counter %}
+				    <tr class="text-light">
+				      <th scope="row" class="border-dark">{{forloop.counter}}</th>
+				      <td class="border-dark">{{team.name}}</td>
+				      {% for points in team_points %}
+				      	<td class="text-black border-dark">{{points|floatformat:'1'}}</td>
+				      {% endfor %}
+				      <td class="border-dark">{% if team.saved_points %}{{team.saved_points|floatformat:'1'}}{% else %}{{team.get_points|floatformat:'1'}}{% endif %}</td>
+				    </tr>
+					{% endif %}
 			    {% endfor %}
 			{% endif %}
 

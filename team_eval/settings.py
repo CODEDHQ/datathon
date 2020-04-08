@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0s&dh3iyv&h8$9j*#fx9xgeiv4m5c*8!z4t17fsv+ptw@c%viu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['c5472e8d.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = ['178.128.198.187']
 
 
 # Application definition
@@ -74,24 +74,24 @@ WSGI_APPLICATION = 'team_eval.wsgi.application'
 
 # Database
 # # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-# if DEBUG:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'django',
-#             'USER': 'django',
-#             'PASSWORD': '6c59ef2c066f28a880dcda8110af3a2f',
-#             'HOST': 'localhost',
-#             'PORT': '',
-#         }
-#     }
-# else:  
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if not DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'django',
+            'USER': 'django',
+            'PASSWORD': 'f3b63abb83810c45cf363c46e0ad0b81',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
     }
-}
+else:  
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation

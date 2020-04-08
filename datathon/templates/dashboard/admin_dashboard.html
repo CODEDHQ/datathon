@@ -19,9 +19,9 @@
 	      <th scope="row">{{forloop.counter}}</th>
 	      <td>{{team.name}}</td>
 	      {% for points in team_points %}
-	      	<td>{{points}}</td>
+	      	<td>{{points|floatformat:'1'}}</td>
 	      {% endfor %}
-	      <td>{{team.get_points}}</td>
+	      <td>{{team.get_points|floatformat:'1'}}</td>
 	    </tr>
 	    {% endif %}
 	    {% endfor %}{% endfor %}
