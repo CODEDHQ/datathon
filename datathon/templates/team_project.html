@@ -35,8 +35,9 @@
 							<td >{{question.question}}</td>
 							{% if question in team.questions.all %}
 								<td>					
-									<a class="btn btn-outline-danger" href="{% url 'undo' question.id team.id %}">undo</a>
+									<a class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal-{{question.id}}">undo</a>
 								</td>
+								{% include 'confirmation_modal.html' with question=question team=team %}
 							{% elif level <  question.level.level %}
 								<td>
 									<i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="{% for question in question.prerequisites.all %} Q:{{question.id}} {% endfor %}"></i>

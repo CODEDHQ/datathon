@@ -25,7 +25,9 @@ SECRET_KEY = '0s&dh3iyv&h8$9j*#fx9xgeiv4m5c*8!z4t17fsv+ptw@c%viu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['178.128.198.187']
+ALLOWED_HOSTS = ['178.128.198.187', 'datathon.joincoded.com']
+# ALLOWED_HOSTS = []
+
 
 
 # Application definition

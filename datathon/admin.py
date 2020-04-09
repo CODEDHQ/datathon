@@ -6,10 +6,10 @@ from .models import *
 class QuestionInline(admin.TabularInline):
 	model = Question
 	extra = 1
-	def formfield_for_manytomany(self, db_field, request, **kwargs):
-		if db_field.name == "prerequisites":
-			kwargs["queryset"] = Question.objects.filter(dataset=self.parent_model.objects.get(pk=resolve(request.path_info).kwargs['object_id']))
-		return super(QuestionInline, self).formfield_for_manytomany(db_field, request, **kwargs)
+	# def formfield_for_manytomany(self, db_field, request, **kwargs):
+	# 	if db_field.name == "prerequisites":
+	# 		kwargs["queryset"] = Question.objects.filter(dataset=self.parent_model.objects.get(pk=resolve(request.path_info).kwargs['object_id']))
+	# 	return super(QuestionInline, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
 class DatasetAdmin(admin.ModelAdmin):
@@ -21,7 +21,16 @@ class DatasetAdmin(admin.ModelAdmin):
 			yield inline.get_formset(request, obj)
 
 
-admin.site.register(Team)
+class BonusScoreInline(admin.TabularInline):
+	model = BonusScore
+	extra = 0
+
+
+class TeamAdmin(admin.ModelAdmin):
+	inlines = [BonusScoreInline]
+
+
+admin.site.register(Team, TeamAdmin)
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Level)
 admin.site.register(BonusScore)

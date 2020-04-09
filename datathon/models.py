@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Avg
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
+
 
 class Dataset(models.Model):
 	name = models.CharField(max_length=50)
@@ -34,7 +36,6 @@ class Team(models.Model):
 	name = models.CharField(max_length=100)
 	points = models.DecimalField(decimal_places=1, max_digits=10 ,default=0)
 	questions = models.ManyToManyField(Question, blank=True)
-	bonus_points = models.IntegerField(default=0)
 	saved_points = models.IntegerField(default=0)
 
 	def __str__(self):
@@ -70,7 +71,7 @@ class TeamDataset(models.Model):
 class BonusScore(models.Model):
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="bonus_scores")
 	dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="bonus_scores")
-	score = models.DecimalField(decimal_places=1, max_digits=4 ,default=0)
+	score = models.DecimalField(decimal_places=1, max_digits=4 ,default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
 	user = models.ForeignKey(User, on_delete=models.PROTECT)
 
 	class Meta:
