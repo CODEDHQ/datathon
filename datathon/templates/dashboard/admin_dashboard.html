@@ -18,9 +18,11 @@
 	    <tr>
 	      <th scope="row">{{forloop.counter}}</th>
 	      <td>{{team.name}}</td>
-	      {% for points in team_points %}
-	      	<td>{{points|floatformat:'1'}}</td>
-	      {% endfor %}
+	      {% for points in team_points %}{% for dataset in datasets %}
+	      {% if forloop.counter == forloop.parentloop.counter %}
+	      	<td><a href="{% url 'team-dataset' dataset.id team.id %}">{{points|floatformat:'1'}}</a></td>
+	      	{% endif %}
+	      {% endfor %}{% endfor %}
 	      <td>{{team.get_points|floatformat:'1'}}</td>
 	    </tr>
 	    {% endif %}
