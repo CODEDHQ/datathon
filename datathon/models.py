@@ -38,6 +38,9 @@ class Team(models.Model):
 	questions = models.ManyToManyField(Question, blank=True)
 	saved_points = models.IntegerField(default=0)
 
+	class Meta:
+		ordering = ["-points"]
+
 	def __str__(self):
 		return self.name
 
@@ -57,6 +60,9 @@ class Team(models.Model):
 		solved_questions = self.questions.filter(dataset_id=dataset_id).count()
 		dataset_questions = Question.objects.filter(dataset_id=dataset_id).count()
 		return solved_questions==dataset_questions
+
+	
+
 
 
 class TeamDataset(models.Model):

@@ -6,13 +6,8 @@ import requests
 
 def teams(request):
 	teams = Team.objects.all()
-	if request.user.is_authenticated:
-		teams = teams.order_by('-points')
-	else:
-		if teams.first().saved_points:
-			teams = teams.order_by('-saved_points')
-		else:
-			teams.order_by('-points')
+	if not request.user.is_authenticated and teams.first().saved_points > 0:
+		teams = teams.order_by('-saved_points')
 
 	datasets = Dataset.objects.all()
 	points_per_dataset = []
@@ -95,11 +90,8 @@ def activate_dashboard(request):
 	for team in Team.objects.all():
 		team.saved_points = 0
 		team.save()
-		for dataset in Dataset.objects.all():
-			dataset_points, created = TeamDataset.objects.get_or_create(team=team, dataset=dataset)
-			dataset_points.points = 0
-			dataset_points.save()
-			
+		TeamDataset.objects.all().delete()
+
 	return redirect("teams")
 
 

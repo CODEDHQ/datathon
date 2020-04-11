@@ -13,7 +13,7 @@
 	  <tbody>
 	  	{% for team in teams %}
 
-		  	{% if team.dataset_points.all.0.points %}
+		  	{% if team.dataset_points.all|length > 0 %}
 				<tr class="text-light">
 			      <th scope="row" class="border-dark">{{forloop.counter}}</th>
 			      <td class="border-dark">{{team.name}}</td>
